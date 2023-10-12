@@ -63,10 +63,8 @@ public class CSVUtils {
     }
 
     public static void writeOrdersToCSV(List<Order> orders, String outputPath) throws IOException {
-        String exportPath = "src/main/resources/export/" + outputPath;
-        createExportFileIfNotExist(exportPath);
-
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(exportPath));
+        createExportFileIfNotExist(outputPath);
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputPath));
              CSVPrinter csvPrinter = initializeCSVPrinter(writer)) {
             for (Order order : orders) {
                 mapOrderIntoCSVPrinter(csvPrinter, order);
