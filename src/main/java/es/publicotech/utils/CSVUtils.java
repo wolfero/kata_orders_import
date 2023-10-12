@@ -11,6 +11,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -62,13 +63,21 @@ public class CSVUtils {
     }
 
     public static void writeOrdersToCSV(List<Order> orders, String outputPath) throws IOException {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputPath));
+        String exportPath = "src/main/resources/export/" + outputPath;
+        createExportFileIfNotExist(exportPath);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(exportPath));
              CSVPrinter csvPrinter = initializeCSVPrinter(writer)) {
             for (Order order : orders) {
                 mapOrderIntoCSVPrinter(csvPrinter, order);
             }
             csvPrinter.flush();
         }
+    }
+
+    private static void createExportFileIfNotExist(String outputPath) throws IOException {
+        Path outputFilePath = Paths.get(outputPath);
+        Files.createDirectories(outputFilePath.getParent());
     }
 
     private static CSVPrinter initializeCSVPrinter(BufferedWriter write) throws IOException {
