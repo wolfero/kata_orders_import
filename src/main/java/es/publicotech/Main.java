@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class Main {
     private static final String importCsvPath = "/import/RegistroVentas1.csv"; //small
     //    private static final String importCsvPath = "/import/RegistroVentas2.csv"; //big
-    private static final String exportCsvPath = "src/main/resource/export/ExportedOrders.csv";
+    private static final String exportCsvPath = "src/main/resources/export/ExportedOrders.csv";
 
     public static void main(String[] args) throws SQLException, IOException {
         DataBaseConnector dbConnector = new DataBaseConnector();
