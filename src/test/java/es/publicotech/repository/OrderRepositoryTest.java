@@ -6,12 +6,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class OrderRepositoryTest {
@@ -39,5 +38,27 @@ public class OrderRepositoryTest {
         verify(mockConnection).prepareStatement(anyString());
         verify(mockPreparedStatement, times(orders.size())).addBatch();
         verify(mockPreparedStatement).executeBatch();
+    }
+
+
+    @Test
+    public void loadAllOrdersTest() throws SQLException, IOException {
+        Connection mockConnection = mock(Connection.class);
+        Statement mockStatement = mock(Statement.class);
+        ResultSet mockResultSet = mock(ResultSet.class);
+        when(dbConnector.connectToDB()).thenReturn(mockConnection);
+        when(mockConnection.createStatement()).thenReturn(mockStatement);
+        when(mockStatement.executeQuery(anyString())).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("order_id")).thenReturn(1, 2);
+
+        List<Order> orders = orderRepository.loadAllOrders();
+
+        verify(dbConnector).connectToDB();
+        verify(mockConnection).createStatement();
+        verify(mockStatement).executeQuery(anyString());
+        verify(mockResultSet, times(2)).next();
+        assertEquals(1, orders.size());
+        assertEquals(1, orders.get(0).getOrderId());
     }
 }
