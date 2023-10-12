@@ -35,4 +35,4 @@ build/
 .DS_Store
 
 ## BIG FILES ##
-/src/main/resources/Big_RegistroVentas.csv
+/src/main/resources/import/RegistroVentas2.csv
