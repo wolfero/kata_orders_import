@@ -8,15 +8,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class Main {
-    private static final String importCsvPath = "/import/RegistroVentas1.csv"; //small
-    //    private static final String importCsvPath = "/import/RegistroVentas2.csv"; //big
+    private static final String URL = "https://kata-espublicotech.g3stiona.com/v1/orders?page=1&max-per-page=1000";
     private static final String exportCsvPath = "src/main/resources/export/ExportedOrders.csv";
 
     public static void main(String[] args) throws SQLException, IOException {
         DataBaseConnector dbConnector = new DataBaseConnector();
         OrderRepository orderRepository = new OrderRepository(dbConnector);
         OrderService orderService = new OrderService(orderRepository);
-        orderService.importOrdersFromCSVIntoDB(importCsvPath);
+        orderService.importOrdersFromApiIntoDB(URL);
         orderService.exportOrdersIntoCSV(exportCsvPath);
     }
 }
