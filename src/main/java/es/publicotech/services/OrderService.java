@@ -73,13 +73,14 @@ public class OrderService implements OrderServiceInterface {
         List<Order> orders = orderRepository.loadAllOrders();
         if (orders != null) {
             List<Order> sortedOrders = getOrdersSortedById(orders);
+            log.info("Start writing!");
             writeOrdersToCSV(sortedOrders, exportCsvPath);
             log.info("Orders were successfully exported into " + exportCsvPath + " file!");
         }
     }
 
     private List<Order> getOrdersSortedById(List<Order> orders) {
-        orders.sort(Comparator.comparing(Order::getOrderId));
+        orders.sort(Comparator.comparing(Order::getId));
         return orders;
     }
 }
