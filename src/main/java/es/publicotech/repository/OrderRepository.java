@@ -82,32 +82,60 @@ public class OrderRepository implements OrderRepositoryInterface {
 
     @Override
     public List<Order> loadAllOrders() throws SQLException, IOException {
-        List<Order> orders = new ArrayList<>();
-        String selectOrdersSQL = "SELECT * FROM ordersschema.orders";
+        List<Order> orders;
         try (
                 Connection connection = dbConnector.connectToDB();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(selectOrdersSQL)
+                PreparedStatement ordersStatement = connection.prepareStatement("SELECT * FROM ordersschema.orders");
+                ResultSet ordersResultSet = ordersStatement.executeQuery();
+                PreparedStatement linksStatement = connection.prepareStatement("SELECT * FROM ordersschema.links");
+                ResultSet linksResultSet = linksStatement.executeQuery()
         ) {
-            while (resultSet.next()) {
-                Order order = new Order();
-                order.setOrderId(resultSet.getInt("order_id"));
-                order.setOrderPriority(resultSet.getString("order_priority"));
-                order.setOrderDate(resultSet.getObject("order_date", LocalDate.class));
-                order.setRegion(resultSet.getString("region"));
-                order.setCountry(resultSet.getString("country"));
-                order.setItemType(resultSet.getString("item_type"));
-                order.setSalesChannel(resultSet.getString("sales_channel"));
-                order.setShipDate(resultSet.getObject("ship_date", LocalDate.class));
-                order.setUnitsSold(resultSet.getInt("units_sold"));
-                order.setUnitPrice(resultSet.getDouble("unit_price"));
-                order.setUnitCost(resultSet.getDouble("unit_cost"));
-                order.setTotalRevenue(resultSet.getDouble("total_revenue"));
-                order.setTotalCost(resultSet.getDouble("total_cost"));
-                order.setTotalProfit(resultSet.getDouble("total_profit"));
-                orders.add(order);
-            }
+            orders = loadOrdersValues(ordersResultSet);
+            orders = loadLinksValues(linksResultSet, orders);
         }
         return orders;
+    }
+
+    private List<Order> loadOrdersValues(ResultSet resultSet) throws SQLException {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<Order> orders = new ArrayList<>();
+        while (resultSet.next()) {
+            Order order = new Order();
+            order.setUuid((UUID) resultSet.getObject("uuid"));
+            order.setId(resultSet.getString("id"));
+            order.setRegion(resultSet.getString("region"));
+            order.setCountry(resultSet.getString("country"));
+            order.setItemType(resultSet.getString("item_type"));
+            order.setSalesChannel(resultSet.getString("sales_channel"));
+            order.setPriority(resultSet.getString("priority"));
+            order.setDate(resultSet.getDate("date").toLocalDate().format(format));
+            order.setShipDate(resultSet.getDate("ship_date").toLocalDate().format(format));
+            order.setUnitsSold(resultSet.getLong("units_sold"));
+            order.setUnitPrice(resultSet.getDouble("unit_price"));
+            order.setUnitCost(resultSet.getDouble("unit_cost"));
+            order.setTotalRevenue(resultSet.getDouble("total_revenue"));
+            order.setTotalCost(resultSet.getDouble("total_cost"));
+            order.setTotalProfit(resultSet.getDouble("total_profit"));
+            orders.add(order);
+        }
+        return orders;
+    }
+
+
+    private List<Order> loadLinksValues(ResultSet resultSet, List<Order> orders) throws SQLException {
+        List<Order> newOrders = new ArrayList<>();
+        while (resultSet.next()) {
+            newOrders = orders.stream().peek(order -> {
+                try {
+                    if (order.getUuid() == resultSet.getObject("order_uuid")) {
+                        Links links = new Links(resultSet.getString("self"));
+                        order.setLinks(links);
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+        }
+        return newOrders;
     }
 }
