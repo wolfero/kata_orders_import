@@ -36,3 +36,6 @@ build/
 
 ## BIG FILES ##
 /src/main/resources/import/RegistroVentas2.csv
+
+## TESTS ###
+/src/test/resources/
