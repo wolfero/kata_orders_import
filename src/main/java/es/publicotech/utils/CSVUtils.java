@@ -1,16 +1,17 @@
 package es.publicotech.utils;
 
 import es.publicotech.models.Order;
+import es.publicotech.models.enums.ExportOrderHeaders;
 import es.publicotech.models.enums.ImportOrderHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -60,4 +61,40 @@ public class CSVUtils {
         );
     }
 
+    public static void writeOrdersToCSV(List<Order> orders, String outputPath) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputPath));
+             CSVPrinter csvPrinter = initializeCSVPrinter(writer)) {
+            for (Order order : orders) {
+                mapOrderIntoCSVPrinter(csvPrinter, order);
+            }
+            csvPrinter.flush();
+        }
+    }
+
+    private static CSVPrinter initializeCSVPrinter(BufferedWriter write) throws IOException {
+        return new CSVPrinter(write, CSVFormat.DEFAULT.builder()
+                .setHeader(ExportOrderHeaders.class)
+                .build()
+        );
+    }
+
+    private static void mapOrderIntoCSVPrinter(CSVPrinter csvPrinter, Order order) throws IOException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        csvPrinter.printRecord(
+                order.getOrderId(),
+                order.getRegion(),
+                order.getCountry(),
+                order.getItemType(),
+                order.getSalesChannel(),
+                order.getOrderPriority(),
+                order.getOrderDate().format(formatter),
+                order.getShipDate().format(formatter),
+                order.getUnitsSold(),
+                order.getUnitPrice(),
+                order.getUnitCost(),
+                order.getTotalRevenue(),
+                order.getTotalCost(),
+                order.getTotalProfit()
+        );
+    }
 }
