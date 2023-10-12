@@ -7,9 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -71,6 +71,32 @@ public class OrderRepository implements OrderRepositoryInterface {
 
     @Override
     public List<Order> loadAllOrders() throws SQLException, IOException {
-        return null;
+        List<Order> orders = new ArrayList<>();
+        String selectOrdersSQL = "SELECT * FROM ordersschema.orders";
+        try (
+                Connection connection = dbConnector.connectToDB();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(selectOrdersSQL)
+        ) {
+            while (resultSet.next()) {
+                Order order = new Order();
+                order.setOrderId(resultSet.getInt("order_id"));
+                order.setOrderPriority(resultSet.getString("order_priority"));
+                order.setOrderDate(resultSet.getObject("order_date", LocalDate.class));
+                order.setRegion(resultSet.getString("region"));
+                order.setCountry(resultSet.getString("country"));
+                order.setItemType(resultSet.getString("item_type"));
+                order.setSalesChannel(resultSet.getString("sales_channel"));
+                order.setShipDate(resultSet.getObject("ship_date", LocalDate.class));
+                order.setUnitsSold(resultSet.getInt("units_sold"));
+                order.setUnitPrice(resultSet.getDouble("unit_price"));
+                order.setUnitCost(resultSet.getDouble("unit_cost"));
+                order.setTotalRevenue(resultSet.getDouble("total_revenue"));
+                order.setTotalCost(resultSet.getDouble("total_cost"));
+                order.setTotalProfit(resultSet.getDouble("total_profit"));
+                orders.add(order);
+            }
+        }
+        return orders;
     }
 }
