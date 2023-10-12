@@ -1,7 +1,21 @@
 # Kata Orders Importer Basic
 
-The objective of this kata is import into a database, a list of orders. At the Basic level, the origin of the orders
-will be CSV files with a fixed structure.
+The objective of this kata is import to a database, the list of online orders. The list of orders is available in a REST
+API (public). The application must query this API to obtain all the orders to be imported.
+
+```
+https://kata-espublicotech.g3stiona.com:443/v1/orders
+```
+
+First call:
+```
+https://kata-espublicotech.g3stiona.com:443/v1/orders?page=1&max-per-page=1000
+```
+
+I used the next parameters:
+1. ``page=1`` to bring first page of orders
+2. ``max-per-page=1000`` to bring 1000 orders on one page. The range from this parameter is 1 to 1000.
+
 
 ## Functionality
 
@@ -57,14 +71,18 @@ docker ps
 
 ### Data Import Configuration
 
-1. Navigate to the `resources` folder within the project.
-2. Place the files you want to import into the `resources/import` folder.
-3. Open the `Main.java` file and modify the `importCsvPath` variable to point to the path of the file you wish to
-   import. Make sure the file is in `.csv` format.
+### !! WARNING, THE API HAS MORE THAN HALF A MILLION RECORDS THAT WILL BE LOADED INTO THE DATABASE AND THEN INTO THE DUMP FILE !!
+
+To load all orders we need change in `OrderService` file the line 37.
 
 ```
-// In Main.java
-String importCsvPath = "/import/your_imported_file.csv";
+change orderCount < 4
+```
+
+for 
+
+```
+apiOrders.getLinks().getNext() != null
 ```
 
 ## Running the Project
