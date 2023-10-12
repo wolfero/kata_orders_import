@@ -13,7 +13,7 @@ public class ConsoleUtils {
         Map<String, Long> countByCountry = generateSummary(orders, Order::getCountry);
         Map<String, Long> countByItemType = generateSummary(orders, Order::getItemType);
         Map<String, Long> countBySalesChannel = generateSummary(orders, Order::getSalesChannel);
-        Map<String, Long> countByOrderPriority = generateSummary(orders, Order::getOrderPriority);
+        Map<String, Long> countByOrderPriority = generateSummary(orders, Order::getPriority);
 
         printSummary("Count by Region", countByRegion);
         printSummary("Count by Country", countByCountry);
