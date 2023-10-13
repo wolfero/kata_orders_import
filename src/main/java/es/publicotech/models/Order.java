@@ -35,5 +35,5 @@ public class Order {
     private Double totalCost;
     @JsonProperty("total_profit")
     private Double totalProfit;
-    private Links links;
+    private String self;
 }
