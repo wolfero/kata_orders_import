@@ -14,9 +14,6 @@ CREATE TABLE ordersschema.orders (
     unit_cost NUMERIC(10, 2),
     total_revenue NUMERIC(15, 2),
     total_cost NUMERIC(15, 2),
-    total_profit NUMERIC(15, 2)
-);
-CREATE TABLE ordersschema.links (
-    order_uuid UUID PRIMARY KEY,
+    total_profit NUMERIC(15, 2),
     self VARCHAR(1024)
 );
