@@ -46,7 +46,7 @@ public class OrderService implements OrderServiceInterface {
         log.info(orderCount + " Pages of orders were successfully imported!");
     }
 
-    private ApiOrders getApiOrders(String url) {
+    ApiOrders getApiOrders(String url) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
