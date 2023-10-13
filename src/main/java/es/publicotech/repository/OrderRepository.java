@@ -71,7 +71,7 @@ public class OrderRepository implements OrderRepositoryInterface {
         try (
                 Connection connection = dbConnector.connectToDB();
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM ordersschema.orders");
-                ResultSet resultSet = preparedStatement.executeQuery();
+                ResultSet resultSet = preparedStatement.executeQuery()
         ) {
             orders = loadOrdersValues(resultSet);
         }
